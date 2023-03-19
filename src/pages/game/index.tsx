@@ -81,7 +81,7 @@ export function GamePage(){
 
   return (
       <GamePageWrapper>
-        <h1>COUP {roomCode} {token}</h1>
+        <h1>COUP {roomCode}{/*  {token}*/}</h1>
         <GameTurn />
         <Wrapper>
           <PlayersData />
