@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { logIntoAccount, registerAccount } from '../../api/account/api';
 import { PrimaryButton } from '../../components/common/Button';
-import { Form, Label } from '../../components/common/Form';
+import { Button, Form, Input, Label } from '../../components/common/Form';
 import { ErrorSpan } from '../../components/common/Span';
 import { useAppDispatch } from '../../hooks/redux';
 import { setAccountData } from '../../store/account/actions';
 import { getErrorMessage } from '../../utils/error';
 import { homePagePath, roomsDashboardPath } from '../../utils/paths';
 import { loginPath } from '../../utils/paths';
+import { HomePageHeadingWrapper, HomePageHeading } from '../home';
 
 
 const LoginWrapper = styled.div`
@@ -18,6 +19,17 @@ const LoginWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 `;
+
+const RegisterPageButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column
+`;
+
+const RegisterPageHeadingWrapper = styled(HomePageHeadingWrapper)`
+  margin-top: 30px;
+`;
+
+const RegisterPageHeading = styled(HomePageHeading)``;
 
 type RegisterInputData = {
   nickname: string;
@@ -61,11 +73,14 @@ export function RegisterPage() {
 
   return (
     <LoginWrapper>
-      <h1>Register</h1>
+      <RegisterPageHeadingWrapper>
+        <RegisterPageHeading>Register</RegisterPageHeading>
+      </RegisterPageHeadingWrapper>
+      
       <Form onSubmit={handleSubmit}>
         <Label>
           Login:
-          <input
+          <Input
             type={'text'}
             id='login'
             name='login'
@@ -75,7 +90,7 @@ export function RegisterPage() {
         </Label>
         <Label>
           Password:
-          <input
+          <Input
             type={'text'}
             id='password'
             name='password'
@@ -85,7 +100,7 @@ export function RegisterPage() {
         </Label>
         <Label>
           Nickname:
-          <input
+          <Input
             type={'text'}
             id='nickname'
             name='nickname'
@@ -93,8 +108,11 @@ export function RegisterPage() {
             onChange={handleInputChange}
           />
         </Label>
-        <PrimaryButton type='submit'>Submit</PrimaryButton>
-        <PrimaryButton type='button' onClick={() => navigate(homePagePath)}>Close</PrimaryButton>
+        <RegisterPageButtonWrapper>
+          <Button type='submit'>Submit</Button>
+          <Button type='button' onClick={() => navigate(homePagePath)}>Close</Button>
+        </RegisterPageButtonWrapper>
+        
         {error && <ErrorSpan>{error}</ErrorSpan>}
       </Form>
     </LoginWrapper>

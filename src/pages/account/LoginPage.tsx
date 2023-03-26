@@ -3,18 +3,35 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { logIntoAccount } from '../../api/account/api';
 import { PrimaryButton } from '../../components/common/Button';
-import { Form, Label } from '../../components/common/Form';
+import { Button, Form, Input, Label } from '../../components/common/Form';
 import { ErrorSpan } from '../../components/common/Span';
 import { useAppDispatch } from '../../hooks/redux';
 import { setAccountData } from '../../store/account/actions';
 import { getErrorMessage } from '../../utils/error';
 import { homePagePath, roomsDashboardPath } from '../../utils/paths';
+import { HomePageHeadingWrapper, HomePageHeading } from '../home';
 
 const LoginWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const LoginPageHeadingWrapper = styled(HomePageHeadingWrapper)`
+  margin-top: 30px;
+`;
+
+const LoginPageHeading = styled(HomePageHeading)``;
+
+
+const LoginPageInput = styled(Input)``;
+
+const LoginButton = styled(Button)``;
+
+const LoginPageButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column
 `;
 
 type LoginInputData = {
@@ -25,6 +42,7 @@ const initialLoginInputData: LoginInputData = {
   login: '',
   password: '',
 };
+
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -58,18 +76,24 @@ export function LoginPage() {
 
   return (
     <LoginWrapper>
-      <h1>Login</h1>
+      <LoginPageHeadingWrapper>
+        <LoginPageHeading>Login</LoginPageHeading>
+      </LoginPageHeadingWrapper>
+      
       <Form onSubmit={handleSubmit}>
         <Label>
           Login:
-          <input type={'text'} id='login' name='login' value={loginData.login} onChange={handleInputChange} />
+          <LoginPageInput type={'text'} id='login' name='login' value={loginData.login} onChange={handleInputChange} />
         </Label>
         <Label>
           Password:
-          <input type={'text'} id='password' name='password' value={loginData.password} onChange={handleInputChange} />
+          <LoginPageInput type={'text'} id='password' name='password' value={loginData.password} onChange={handleInputChange} />
         </Label>
-        <PrimaryButton type='submit'>Submit</PrimaryButton>
-        <PrimaryButton type='button' onClick={() => navigate(homePagePath)}>Close</PrimaryButton>
+        <LoginPageButtonWrapper>
+          <LoginButton type='submit'>Submit</LoginButton>
+          <LoginButton type='button' onClick={() => navigate(homePagePath)}>Close</LoginButton>
+        </LoginPageButtonWrapper>
+        
         {error && <ErrorSpan>{error}</ErrorSpan>}
       </Form>
     </LoginWrapper>

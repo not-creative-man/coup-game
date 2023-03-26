@@ -40,7 +40,7 @@ export async function runProcedure<T>( name: string, options?: RunProcedureOptio
     results,
   } = options ?? {};
 
-  console.log(options);
+  // console.log(options);
 
   const response = await requests.get<T>({
     db: dataBaseNumber,

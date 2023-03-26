@@ -11,13 +11,13 @@ import { useToken } from '../../store/account/hooks';
 import { loginPath, registerPath, roomsDashboardPath } from '../../utils/paths';
 
 const HomePageContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
+  // width: 1920px;
+  height: calc(1080px - 4rem);
+  margin: auto;
 
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
 
   &:before {
     content: '';
@@ -49,6 +49,23 @@ const HomePageContainer = styled.div`
     opacity: 0.3;
   }
 `;
+
+export const HomePageHeadingWrapper = styled.div`
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+// padding: 20px;
+gap: 10px;
+margin-bottom: 50px;
+
+width: 490px;
+height: 94px;
+
+
+background: #FFFFFF;
+border-radius: 20px;
+`;
+
 const HomePageWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -56,19 +73,37 @@ const HomePageWrapper = styled.div`
   flex-direction: column;
 
   background-color: ${colors.bg1};
-  border: 3px solid ${colors.bg2};
   border-radius: 1rem;
-  padding: 2rem 3rem;
+  padding: 2rem 3rem; 
 `;
 
-const HomePageHeading = styled.h1`
-  font-size: 75px;
-  margin: 0 0 2rem;
+export const HomePageHeading = styled.h1`
+
+  margin: 0;
+  font-style: normal;
+font-weight: 400;
+font-size: 64px;
+line-height: 30px;
+
+color: #000000;
+
+margin: auto; 
+margin-bottom: 25px;
 `;
 
 const HomePageButton = styled(PrimaryButton)`
   font-size: 30px;
-  padding: 1rem 1.5rem;
+  padding: 0;
+  width: 400px;
+  height: 70px;
+  margin-bottom: 13px;
+  // background-color: #D41515;
+
+  font-family: 'BOWLER';
+font-style: normal;
+font-weight: 400;
+font-size: 36px;
+line-height: 40px;
 `;
 
 function HomePage() {
@@ -95,7 +130,10 @@ function HomePage() {
   return (
     <HomePageContainer>
       <HomePageWrapper>
-        <HomePageHeading>Coup</HomePageHeading>
+        <HomePageHeadingWrapper>
+          <HomePageHeading>ПЕРЕВОРОТ</HomePageHeading>
+        </HomePageHeadingWrapper>
+       
 
         {isLoading ? (
           <LoadingSpinner />

@@ -5,141 +5,216 @@ import assassin from '../../../utils/Pictures/Assassin.png';
 import captain from '../../../utils/Pictures/Captain.png';
 import contessa from '../../../utils/Pictures/Contessa.png';
 import duke from '../../../utils/Pictures/Duke.png';
+import { useEffect, useState } from "react";
+import dollar from '../../../utils/Pictures/icons/dollar.png';
 
-const TableCell = styled.th`
-  outline: 1px solid black;
-  height: 150px;
-  width: 120px;
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 250px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    justify-content: space-evenly;
 `;
 
-const TableHeaderRow = styled.th`
-outline: 1px solid black;
-    height: 90px;
+const Header = styled.div`
+font-family: 'BOWLER';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 26px;
+
+color: #757373;
+
+margin-top: 30px;
+margin-left: 30px;
 `;
 
-const Table = styled.table`
-    // height: 300px;
+const HeaderCurrent = styled(Header)`
+    color: red;
 `;
 
-const Img = styled.img`
-    width: 100px;
-`;
-
-const CurrentTableRow = styled.tr`
+const CurrentContainer = styled(Container)`
     outline: 2px solid red;
-    background-color: #ffb6b6;
+`;
+
+const MoneyWrapper = styled.div`
+  display: flex; 
+`;
+
+const MoneyNum = styled.span`
+  font-family: 'BOWLER';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 26px;
+
+color: #D51515;
+margin-left: 30px;
+margin-bottom: 26px;
+margin-top: 12px;
+margin-right: 5px;
+`;
+
+const LastAction = styled.div`
+
+    &>p{
+        margin-top: 15px;
+        margin-left: 30px;
+        font-family: 'BOWLER';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 22px;
+
+        color: #000000;
+
+        &>span{
+            color: red;
+        }
+    }
+`;
+
+const MoneyIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  background-image: url(${dollar});
+    margin-top: 5px;
+`;
+
+const Card = styled.div`
+
+font-family: 'BOWLER';
+font-style: normal;
+font-weight: 400;
+font-size: 20px;
+line-height: 22px;
+/* identical to box height */
+
+margin-top: 15px;
+margin-left: 30px;
+
+color: #000000;
+
+    &>span{
+        color: red;
+    }
+`;
+
+const Wrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 50px;
+    width: 800px;
 `;
 
 export function OpponentsTable(){
 
     const gameStoreState = useGameStoreState();
     const opponents = useOpponentsData();
+    const [action, setAction] = useState<number | undefined>(-1);  
+    const [currentOpponent, setCurrentOpponent] = useState<number>(-1);
+    
+
+    useEffect(() => {
+        setInterval(() => {
+            
+            if(opponents !== null){
+                opponents.map((opponent, i) => {
+                    if(opponent.is_current_turn && opponent.last_action !== action){
+                        // console.log(`${opponent.last_action} ${action}`);
+                        // console.log(opponent);
+                        // console.log(`129 in opponents index`);
+                        setAction(opponent.last_action);
+                    } 
+                })
+
+                // console.log(opponents);
+                // console.log(`ahahahahah ${opponents.find((opponent) => (opponent.is_current_turn))}`)
+                // if(opponents.find((opponent) => (opponent.is_current_turn === true))?.last_action !== action) {
+                //     setAction(opponents.find((opponent) => (opponent.is_current_turn === true))?.last_action);
+                //     console.log(action);
+                // }
+            }
+        }, 5000);
+        
+        // console.log(action);
+    }, [])
+
+    useEffect(() => {
+        if(action !== undefined && action !== -1 && action !== null){
+            // alert(action);
+        }
+        
+    }, [action])
 
     if(opponents === null ) return null;
     if(gameStoreState === null) return null;
 
     const {player} = gameStoreState;
+
+
     
     return(
-        <>
-            <Table>
-                <thead>
-                    <tr>
-                        {/* <TableCell>id</TableCell> */}
-                        <TableHeaderRow>Игрок</TableHeaderRow>
-                        <TableHeaderRow>Монеты</TableHeaderRow>
-                        <TableHeaderRow>Карта 1</TableHeaderRow>
-                        <TableHeaderRow>Карта 2</TableHeaderRow>
-                        {/* <TableCell>Последнее действие</TableCell> */}
-                        {/* <TableHeaderRow>Порядок хода</TableHeaderRow> */}
-                        <TableHeaderRow>Действие</TableHeaderRow>
-                        <TableHeaderRow>Цель</TableHeaderRow>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        opponents.map((opponent, i) => (
-                            opponent.is_current_turn ?
-                            <CurrentTableRow key={`${opponent}-${i}`}>
-                                {/* <TableCell>{opponent.id}</TableCell> */}
-                                <TableCell>{opponent.nickname}</TableCell>
-                                <TableCell>{opponent.money}</TableCell>
-                                <TableCell>
-                                    {opponent.opened_1
-                                        ? 
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Губернатор" ? <Img src={duke} /> :
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Убийца" ? <Img src={assassin} /> :
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Городовой" ? <Img src={captain} /> :
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Графиня" ? <Img src={contessa} /> : ""
-                                        : ''}
-                                </TableCell>
-                                <TableCell>
-                                    {opponent.opened_2
-                                        ? 
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Губернатор" ? <Img src={duke} /> :
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Убийца" ? <Img src={assassin} /> :
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Городовой" ? <Img src={captain} /> :
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Графиня" ? <Img src={contessa} /> : ""
-                                        : ''}    
-                                </TableCell>
-                                {/* <TableCell>{opponent.}</TableCell> */} 
-                                {/* <TableCell>{opponent.move_order}</TableCell> */}
-                                <TableCell>{
-                                    myTurn.findIndex(effect => effect.num === opponent.last_action) !== -1 ? 
-                                        myTurn.find(effect => effect.num === opponent.last_action)?.name :
-                                        otherTurn.find(effect => effect.num === opponent.last_action)?.name
-                                        }
-                                </TableCell>
-                                <TableCell>
-                                    {
-                                        opponent.target === player.id ? 
-                                            player.nickname :
-                                            opponents.find(el => el.id === opponent.target)?.nickname
-                                    }
-                                </TableCell>
-                            </CurrentTableRow> : 
-                            <tr key={`${opponent}-${i}`}>
-                                {/* <TableCell>{opponent.id}</TableCell> */}
-                                <TableCell>{opponent.nickname}</TableCell>
-                                <TableCell>{opponent.money}</TableCell>
-                                <TableCell>
-                                    {opponent.opened_1
-                                        ? 
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Губернатор" ? <Img src={duke} /> :
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Убийца" ? <Img src={assassin} /> :
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Городовой" ? <Img src={captain} /> :
-                                            cards.find((card) => (card.num === opponent.card_1))?.name === "Графиня" ? <Img src={contessa} /> : ""
-                                        : ''}
-                                </TableCell>
-                                <TableCell>
-                                    {opponent.opened_2
-                                        ? 
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Губернатор" ? <Img src={duke} /> :
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Убийца" ? <Img src={assassin} /> :
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Городовой" ? <Img src={captain} /> :
-                                            cards.find((card) => (card.num === opponent.card_2))?.name === "Графиня" ? <Img src={contessa} /> : ""
-                                        : ''}    
-                                </TableCell>
-                                {/* <TableCell>{opponent.}</TableCell> */} 
-                                {/* <TableCell>{opponent.move_order}</TableCell> */}
-                                <TableCell>{
-                                    myTurn.findIndex(effect => effect.num === opponent.last_action) !== -1 ? 
-                                        myTurn.find(effect => effect.num === opponent.last_action)?.name :
-                                        otherTurn.find(effect => effect.num === opponent.last_action)?.name
-                                        }
-                                </TableCell>
-                                <TableCell>
-                                    {
-                                        opponent.target === player.id ? 
-                                            player.nickname :
-                                            opponents.find(el => el.id === opponent.target)?.nickname
-                                    }
-                                </TableCell>
-                            </tr>
-                        ) )
-                    }
-                </tbody>
-            </Table>
-        </>
+        <Wrapper>
+            {
+                opponents.map(opponent => (
+                    opponent.is_current_turn ? (
+                        <CurrentContainer>
+                            <HeaderCurrent>{opponent.nickname}</HeaderCurrent>
+                            <Card>Карта 1:  
+                                <span>
+                                    {opponent.opened_1 ? cards.find((card) => (card.num === opponent.card_1))?.name: ''}
+                                </span>
+                            </Card>
+                            <Card>Карта 2: 
+                                <span>
+                                    {opponent.opened_2 ? cards.find((card) => (card.num === opponent.card_2))?.name: ''}
+                                </span>
+                            </Card>
+                            <LastAction>
+                                <p>Действие:<br/><span>{
+                                        myTurn.findIndex(effect => effect.num === opponent.last_action) !== -1 ? 
+                                            myTurn.find(effect => effect.num === opponent.last_action)?.name :
+                                            otherTurn.find(effect => effect.num === opponent.last_action)?.name
+                                            }</span></p>
+                            </LastAction>
+                            <MoneyWrapper>
+                                <MoneyNum>{opponent.money}</MoneyNum>
+                                <MoneyIcon></MoneyIcon>
+                            </MoneyWrapper>
+                        </CurrentContainer>
+                    ) : (
+                        <Container>
+                            <Header>{opponent.nickname}:</Header>
+                            <Card>Карта 1:  
+                                <span>
+                                    {opponent.opened_1 ? cards.find((card) => (card.num === opponent.card_1))?.name: ''}
+                                </span>
+                            </Card>
+                            <Card>Карта 2: 
+                                <span>
+                                    {opponent.opened_2 ? cards.find((card) => (card.num === opponent.card_2))?.name: ''}
+                                </span>
+                            </Card>
+                            <LastAction>
+                                <p>Действие:<br/><span>{
+                                        myTurn.findIndex(effect => effect.num === opponent.last_action) !== -1 ? 
+                                            myTurn.find(effect => effect.num === opponent.last_action)?.name :
+                                            otherTurn.find(effect => effect.num === opponent.last_action)?.name
+                                            }</span></p>
+                            </LastAction>
+                            <MoneyWrapper>
+                                <MoneyNum>{opponent.money}</MoneyNum>
+                                <MoneyIcon></MoneyIcon>
+                            </MoneyWrapper>
+                        </Container>
+                    )
+                    
+                ))
+            }
+        </Wrapper>
     );
 }

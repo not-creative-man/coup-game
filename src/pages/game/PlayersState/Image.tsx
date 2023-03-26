@@ -4,32 +4,33 @@ import assassin from '../../../utils/Pictures/Assassin.png';
 import captain from '../../../utils/Pictures/Captain.png';
 import contessa from '../../../utils/Pictures/Contessa.png';
 import duke from '../../../utils/Pictures/Duke.png';
+import x from '../../../utils/Pictures/icons/x.png';
+
 
 const OpenedImage = styled.div`
-    width: 150px;
-    height: 213px;
-    opacity: 40%;
-    // background-color: red;
+width: 170px;
+    opacity: 30%;
+    background-image: url(${x});
+    background-size: 150px 213px;
 `;
 
 const ImageWrapper = styled.div`
     display: flex;
-    width: 400px;
     margin-top: 15px;
     margin-bottom: 15px;
+    margin-right: 40px;
     justify-content: space-around;
 `;
 
 const Img = styled.img`
-    width: 150px;
-    height: 213px;
+    width: 170px;
 `;
 
 interface PlayerDataImageProps {
-    cards: Card[];
+    card: Card;
   }
 
-export function Image({cards}: PlayerDataImageProps){
+export function Image({card}: PlayerDataImageProps){
 
     const imgType = [
         {name: "Губернатор", src: duke},
@@ -41,15 +42,13 @@ export function Image({cards}: PlayerDataImageProps){
     return (
         <ImageWrapper>
             {
-                cards.map((card, i) => (
                     card.isOpened ? 
                         imgType.map((img, j) => (
                             card.name === img.name ? <OpenedImage><Img src={img.src} /></OpenedImage> : <></>
                         )) 
                     : imgType.map((img, j) => (
                             card.name === img.name ? <Img src={img.src} /> : ''
-                    )) 
-                ))
+                    ))
             }
         </ImageWrapper>
         

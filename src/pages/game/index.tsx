@@ -4,16 +4,32 @@ import { markDbError } from '../../api/game/api';
 import { useGameAPI } from '../../api/game/hooks';
 import { useToken } from '../../store/account/hooks';
 import {
-  useGameStoreState, usePlayerData,
+  useGameStoreState,
 } from '../../store/game/hooks';
 import { useRoomCode } from '../../store/room/hooks';
 import { getErrorMessage } from '../../utils/error';
-
+import { useNavigate } from "react-router-dom";
 import { GameTurn } from './GameServises';
 import { OpponentsTable } from './opponents';
 import { PlayersData } from './PlayersState';
 import { BottomButtonsList } from './PlayersState/BottomButtonsList';
 import { WinModal } from './WinInfo';
+import { leaveRoom } from "../../api/rooms/api";
+import { DashboardHeading, DashboardWrapper, WrapperBackground, DashboardLogo, DashboardH1 } from '../../components/common/PageStyling';
+import { roomsDashboardPath } from '../../utils/paths';
+import exit from '../../utils/Pictures/icons/exit.png';
+
+const MainWrapper = styled(DashboardWrapper)`
+  // height: 100%;
+`;
+
+const RoomsDashboardHeading = styled(DashboardHeading)`
+  margin-top: 60px;
+`;
+
+const RoomsDashboardLogo = styled(DashboardLogo)``;
+
+const RoomsDashboardH1 = styled(DashboardH1)``;
 
 const GamePageWrapper = styled.div`
   width: 100%;
@@ -26,9 +42,47 @@ const GamePageWrapper = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   display: flex;    
-  justify-content: space-around;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const HeaderExitWrapper = styled.div`
+  display: flex;
+
+  & > span{
+    margin-right: 30px;
+    font-family: 'BOWLER';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 40px;
+
+    color: #000000;
+  }
+`;
+
+const HeaderLeftPart = styled.div`
+  display: flex;
+  flex-direction: column;
+    align-items: flex-end;
+`;
+
+const LeaveButton = styled.div`
+    background-color: none;
+  border: 0;
+  cursor: pointer;
+  // border: 1px solid #3498db;
+  background-color: transparent;
+`;
+
+const GameInfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  margin-left: 50px;
   align-items: center;
 `;
+
 
 type B = {
   num: number;
@@ -46,7 +100,7 @@ export const myTurn: B[] = [
 ];
 
 export const otherTurn: B[] = [
-  {num: 5, name:"Блокируйте иностранную помощь (получение 2 монет)", desc: "Блокируйте иностранную помощь (получение 2 монет)"},
+  {num: 5, name:"Блокируйте иностранную помощь", desc: "Блокируйте иностранную помощь"},
   {num: 7, name:"Блокируйте воровство", desc: "Блокируйте воровство"},
   {num: 9, name:"Блокирует убийство", desc: "Блокирует убийство"},
   {num: 10, name:"Согласиться с действием", desc: "Согласиться с действием"},
@@ -70,6 +124,7 @@ export const cards: B[] = [
 
 export function GamePage(){
 
+  const navigate = useNavigate();
   const token = useToken();
 
   const gameStoreState = useGameStoreState();
@@ -77,19 +132,61 @@ export function GamePage(){
 
   useUpdatedGameState(roomCode);
 
-  if (!gameStoreState) return null;
+  const player = gameStoreState?.player;
+
+  function handleLeaveGame() {
+    // console.log(token);
+    // console.log(roomCode);
+    if (!token || !roomCode) return;
+
+    (async function () {
+      try {
+        await leaveRoom(token, roomCode);
+        navigate(roomsDashboardPath);
+      } finally {
+        console.log("out");
+      }
+    })();
+  }
+
+  if (!gameStoreState || !player) return null;
 
   return (
+    <MainWrapper>
+      <RoomsDashboardHeading>
+        <RoomsDashboardLogo>
+          <RoomsDashboardH1>
+            ПЕРЕВОРОТ
+          </RoomsDashboardH1>
+        </RoomsDashboardLogo>
+        <HeaderLeftPart>
+          <HeaderExitWrapper>
+            <span>
+              {player.nickname} {roomCode}
+            </span>
+            <LeaveButton onClick={() => handleLeaveGame()}>
+              <img src={exit} alt="exit" />
+            </LeaveButton>
+          </HeaderExitWrapper>
+          <GameTurn />
+        </HeaderLeftPart>
+        
+        
+      </RoomsDashboardHeading>
       <GamePageWrapper>
-        <h1>COUP {roomCode}{/*  {token}*/}</h1>
-        <GameTurn />
         <Wrapper>
           <PlayersData />
-          <OpponentsTable />
+          <GameInfoWrapper>
+            
+            <OpponentsTable />
+            <BottomButtonsList />
+          </GameInfoWrapper>
         </Wrapper>
-        <BottomButtonsList />
+        
         <WinModal />
       </GamePageWrapper>
+    </MainWrapper>
+      
   );
 }
 

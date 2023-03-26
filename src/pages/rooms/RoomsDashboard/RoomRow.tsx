@@ -16,7 +16,7 @@ const StyledRoomItem = styled.tr`
 const RoomItemColumn = styled.td`
   padding: 0.5rem 1rem;
   // border: 2px solid ${colors.text};
-  margin: 10px 0;
+  margin: 10px 144px;
 `;
 
 const ButtonColumn = styled(RoomItemColumn)`
@@ -25,6 +25,14 @@ const ButtonColumn = styled(RoomItemColumn)`
   & button {
     width: 100%;
   }
+`;
+
+const JoinButton = styled(PrimaryButton)`
+width: 156px;
+height: 52px;
+
+background: #D51515;
+border-radius: 20px;
 `;
 
 type RoomItemProps = {
@@ -67,12 +75,12 @@ export function RoomItem({ room }: RoomItemProps) {
       <RoomItemColumn>{room.code}</RoomItemColumn>
       <RoomItemColumn>{room.admin.nickname}</RoomItemColumn>
       <ButtonColumn>
-        <PrimaryButton
+        <JoinButton
           onClick={handleEnterRoom}
           disabled={!room.hasEntered && room.hasGameStarted}
         >
           {room.hasEntered ? 'Return' : 'Enter room'}
-        </PrimaryButton>
+        </JoinButton>
         {error && <ErrorSpan>{error}</ErrorSpan>}
       </ButtonColumn>
     </StyledRoomItem>

@@ -14,60 +14,6 @@ export function startGame(token: string | number, roomCode: string | number): Pr
   });
 }
 
-// type CardsResponse = {
-//   RESULTS: [
-//     {
-//       card_id: string;
-//       name: string;
-//       effect: string;
-//       counterEffect: string;
-//       isOpened: boolean;
-//     },
-//     {
-//       card_id: string;
-//       name: string;
-//       effect: string;
-//       counterEffect: string;
-//       isOpened: boolean;
-//     }
-//   ]
-// }
-
-// function setCards(resp: CardsResponse): PlayerCards{
-//   const playerResp = resp.RESULTS;
-//   const card_1: Card = {
-//     card_id       : playerResp[0].card_id[0],
-//     name          : playerResp[0].name[0],
-//     effect        : playerResp[0].effect[0],
-//     counterEffect : playerResp[0].counterEffect[0],
-//     isOpened      : playerResp[0].isOpened,
-//   }
-//   const card_2: Card = {
-//     card_id       : playerResp[1].card_id[0],
-//     name          : playerResp[1].name[0],
-//     effect        : playerResp[1].effect[0],
-//     counterEffect : playerResp[1].counterEffect[0],
-//     isOpened      : playerResp[1].isOpened,
-//   }
-
-//   const PC: PlayerCards = {
-//     card_1: card_1,
-//     card_2: card_2,
-//   }
-
-//   return PC;
-// }
-
-
-// export async function getCards(token: string, roomCode: string): Promise<PlayerCards>{
-//   const resp = await runProcedure<CardsResponse>('getCards', {
-//     param1: token,
-//     param2: roomCode,
-//   });
-//   console.log(resp);
-//   return setCards(resp);
-// }
-
 type GameStateResponse = {
   RESULTS: [
     {
@@ -249,30 +195,7 @@ export async function getAnswer(token: string, roomCode: string): Promise<Answer
   return resp;
 }
 
-export function next(token: string, roomCode: string): Promise<void> {
-  return runProcedure<void>('next', {
-    param1: token,
-    param2: roomCode,
-  });
-}
-
-export function handleAction(token: string, roomCode: string, effect: number){
-  return runProcedure<void>('handleAction',{
-    param1: token,
-    param2: roomCode,
-    param3: effect,
-  })
-}
-
 export async function setAnswer(token: string, roomCode: string, effect: number): Promise<void> {
-  await runProcedure<number>('setAnswer',{
-    param1: token,
-    param2: roomCode,
-    param3: effect,
-  });
-}
-
-export async function checkResponse(token: string, roomCode: string, effect: number): Promise<void> {
   await runProcedure<number>('setAnswer',{
     param1: token,
     param2: roomCode,

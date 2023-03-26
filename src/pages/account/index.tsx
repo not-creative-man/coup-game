@@ -17,8 +17,6 @@ const ContentWrapper = styled.div`
   margin: 0 auto;
 
   background-color: ${colors.bg1};
-
-  border: 3px solid ${colors.bg2};
   border-radius: 20px;
 `;
 

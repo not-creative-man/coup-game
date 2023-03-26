@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import { colors } from '../../constants/theme';
 
 export const PrimaryButton = styled.button`
-  padding: 0.5rem 1rem;
+  // padding: 0.5rem 1rem;
 
   color: ${colors.textAlter};
   background-color: ${colors.primary};
 
   font-size: 18px;
-  font-family: "Arial";
+  font-family: 'Bowler';
 
   border: none;
   border-radius: 20px;

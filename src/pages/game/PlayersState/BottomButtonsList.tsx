@@ -1,6 +1,6 @@
 import {  useEffect, useState } from "react";
 import styled from "styled-components";
-import { action, getAnswer, handleAction, next as Next, markDbError, setAnswer} from "../../../api/game/api";
+import { action, getAnswer, setAnswer} from "../../../api/game/api";
 import { useToken } from "../../../store/account/hooks";
 import { useGameStoreState, useOpponentsData, usePlayerData } from "../../../store/game/hooks";
 import { useRoomCode } from "../../../store/room/hooks";
@@ -13,9 +13,17 @@ const ButtonsList = styled.div`
 display: flex;
 margin-top: 20px;
 visibility: visible;
+flex-wrap: wrap;
+width: 618px;
+height: 200px;
 `;
 
 const Button = styled(PrimaryButton)`
+width: 190px;
+height: 90px;
+
+background: #D51515;
+border-radius: 20px;
     margin-right: 10px; 
 `;
 
@@ -66,10 +74,6 @@ const ModalRow = styled.tr`
     display: flex;
 `;
 
-const Span = styled.span`
-// visibility: hidden;
-`;
-
 const ModalHeader = styled.div`
     display: flex;
     width: 100%;
@@ -114,7 +118,6 @@ export function BottomButtonsList(){
     const opponents = useOpponentsData();
     const [effectHandler, setEffectHandler] = useState<number>(0);
     const [target, setTarget] = useState<number>(-1);
-    const [last, setLast] = useState<number>(0);
     
     useEffect(() => {
         if(effectHandler !== 0){
@@ -133,19 +136,18 @@ export function BottomButtonsList(){
                         setError(null);
                     } catch (e) {
                         console.error(e);
+                        alert(e);
                         setError(getErrorMessage(e));
                         handleCurrentClick(effectHandler);
                     }
                 })();
-                // console.log("start");
+                console.log("start");
                 if( effectHandler !== 1 ) {
-                    sleep(15000)
-                        .then(() => getAnswers());
+                    sleep(20000)
+                        .then(() => getAnswers())
                 } else {
-                    sleep(2000)
-                        .then(() => getAnswers());
-                    // console.log(player);
-                }    
+                    sleep(5000).then(() => bList.style.visibility = "visible");
+                }
             } 
         }
             
@@ -171,21 +173,17 @@ export function BottomButtonsList(){
                   setError(getErrorMessage(e));
                 }
             })();
-            console.log("start");
+            // console.log("start");
             if(effectHandler !== 3){
-                sleep(15000)
-                    .then(() => getAnswers())
-            } else{
-                sleep(3000)
-                        .then(() => getAnswers())
-                console.log(player);
-            } 
+                sleep(20000)
+                    .then(() => getAnswers());
+            } else {
+                sleep(5000).then(() => bList.style.visibility = "visible");
+            }
+ 
         }
     }, [target]);
 
-    useEffect(() => {
-
-    }, [last])
 
     if(opponents === null || gameApi === null || roomCode === null || gameStoreState === null || player === null){
         console.log("opponents is null");
@@ -196,11 +194,6 @@ export function BottomButtonsList(){
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // TODO: Реализовать блокирование кнопок 
-    // Если ход мой, то кнопки исчезают сразу после нажатия
-    // Если ход не мой, то кнопки 
-
-   
 
     function handleCurrentClick(effect: number){
         if(player === null) return null;
@@ -212,19 +205,21 @@ export function BottomButtonsList(){
 
     function handleAnswerClick(effect: number){
         if (!token || roomCode === null || modal === null || bList === null) return;
-        // bList.style.visibility = 'hidden';
+        if(player?.lost) bList.style.visibility = 'hidden';
         setError('');
         closeModal();
         
         (async function () {
             try {
-                console.log(`Answer is sended: ${effect}`);
+              console.log(`Answer is sended: ${effect}`);
               await setAnswer(token, roomCode, effect);
+              bList.style.visibility = 'hidden';
               setError(null);
             } catch (e) {
               console.error(e);
               setError(getErrorMessage(e));
             }
+            sleep(15000).then(() => bList.style.visibility = 'visible');
         })();
     }
 
@@ -234,7 +229,9 @@ export function BottomButtonsList(){
         if(token === null || roomCode === null || bList === null) return null;
         (async function () {
             try {
-                await getAnswer(token, roomCode);
+                await getAnswer(token, roomCode).finally(async () => {
+                    await gameApi!.updateGameState();
+                });
             } catch (e) {
                 console.error(e);
                 setError(getErrorMessage(e));
@@ -244,6 +241,7 @@ export function BottomButtonsList(){
         })();
         setTarget(-1);
         setEffectHandler(0);
+        // console.log("Now buttons are avilable again!");
         bList.style.visibility = 'visible';
     }
 
@@ -258,9 +256,10 @@ export function BottomButtonsList(){
 
     return(
         <>
-            <></>
-            <ButtonsList id="list">
-                {
+            {
+                player.lost ? '' : 
+                <ButtonsList id="list">
+                    {
                     player.is_current_turn ? ( player.money >=10 ? 
                         <Button 
                             onClick={() => handleCurrentClick(myTurn[2].num)}
@@ -273,7 +272,12 @@ export function BottomButtonsList(){
                                 ?
                                     opponents.find((opponent) => (opponent.is_current_turn))?.last_action === 2 
                                     ?
-                                        <Button key={`${otherTurn[0].name}-${1}`} onClick={() => handleAnswerClick(otherTurn[0].num)} title={otherTurn[0].desc}>{otherTurn[0].name}</Button> 
+                                       (player.card_1 === 1 || player.card_1 === 2 || player.card_1 === 3) || 
+                                       (player.card_2 === 1 || player.card_2 === 2 || player.card_2 === 3) 
+                                        ?
+                                            <Button key={`${otherTurn[0]}-${0}`} onClick={() => handleCurrentClick(otherTurn[0].num)} title={otherTurn[0].desc}>{otherTurn[0].name}</Button>
+                                        :
+                                            ""
                                     : 
                                         opponents.find((opponent) => (opponent.is_current_turn))?.last_action === null 
                                         ?
@@ -288,26 +292,51 @@ export function BottomButtonsList(){
                                 :
                                     opponents.find((opponent) => (opponent.is_current_turn))?.last_action === 6
                                         ?
-                                            otherTurn.map((effect, i) => (
-                                                [9, 10, 11].includes(effect.num) 
-                                                ? 
-                                                    <Button key={`${effect}-${i}`} onClick={() => handleAnswerClick(effect.num)} title={effect.desc}>{effect.name}</Button> 
-                                                : 
-                                                    "")) 
+                                            (player.card_1 === 10 || player.card_1 === 11 || player.card_1 === 12) || 
+                                            (player.card_2 === 10 || player.card_2 === 11 || player.card_2 === 12) 
+                                             ?
+                                                otherTurn.map((effect, i) => (
+                                                   [9, 10, 11].includes(effect.num) 
+                                                   ? 
+                                                       <Button key={`${effect}-${i}`} onClick={() => handleAnswerClick(effect.num)} title={effect.desc}>{effect.name}</Button> 
+                                                   : 
+                                                       ""))  
+                                             :
+                                                otherTurn.map((effect, i) => (
+                                                   [10, 11].includes(effect.num) 
+                                                   ? 
+                                                       <Button key={`${effect}-${i}`} onClick={() => handleAnswerClick(effect.num)} title={effect.desc}>{effect.name}</Button> 
+                                                   : 
+                                                       ""))  
+                                            
                                         :
                                             opponents.find((opponent) => (opponent.is_current_turn))?.last_action === 8
                                                 ?
-                                                    otherTurn.map((effect, i) => (
-                                                        [7, 10, 11].includes(effect.num) 
-                                                        ? 
-                                                            <Button key={`${effect}-${i}`} onClick={() => handleAnswerClick(effect.num)} title={effect.desc}>{effect.name}</Button> 
-                                                        : 
-                                                            "")) 
+                                                    (player.card_1 === 7 || player.card_1 === 8 || player.card_1 === 9) || 
+                                                    (player.card_2 === 7 || player.card_2 === 8 || player.card_2 === 9) 
+                                                     ?
+                                                        otherTurn.map((effect, i) => (
+                                                           [7, 10, 11].includes(effect.num) 
+                                                           ? 
+                                                               <Button key={`${effect}-${i}`} onClick={() => handleAnswerClick(effect.num)} title={effect.desc}>{effect.name}</Button> 
+                                                           : 
+                                                               ""))  
+                                                     :
+                                                        otherTurn.map((effect, i) => (
+                                                           [10, 11].includes(effect.num) 
+                                                           ? 
+                                                               <Button key={`${effect}-${i}`} onClick={() => handleAnswerClick(effect.num)} title={effect.desc}>{effect.name}</Button> 
+                                                           : 
+                                                               ""))  
                                                 : 
                                                     ""
                 }
+                </ButtonsList> 
+            }
+            
+            
                 {/* <Span>{effectHandler}</Span> */}
-            </ButtonsList> 
+            
             <ModalTarget id="modalTarget">
                 <ModalWrapper>
                     <ModalHeader>
